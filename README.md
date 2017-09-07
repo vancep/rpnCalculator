@@ -1,10 +1,15 @@
 # rpnCalculator
 A JSON RPC back-end for a multi-session RPN calculator  
 
+## Some resources
+http://www.jsonrpc.org/
+http://www.jsonrpc.org/specification
+http://www.simple-is-better.org/rpc/
+
 **Method**  
 open  
 **Parameter**  
-N/A N/A  
+N/A (N/A)  
 **Result**  
 session_id (integer)  
 **Method Description**  
@@ -63,7 +68,7 @@ session_id (integer)
 N/A (N/A)  
 **Method Description**  
 Close the specified session. Return null.  
-  
+
 ## Errors
 
 **Code	Message**  
