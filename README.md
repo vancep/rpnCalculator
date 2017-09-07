@@ -2,9 +2,9 @@
 A JSON RPC back-end for a multi-session RPN calculator  
 
 ## Some resources
-http://www.jsonrpc.org/
-http://www.jsonrpc.org/specification
-http://www.simple-is-better.org/rpc/
+http://www.jsonrpc.org/  
+http://www.jsonrpc.org/specification  
+http://www.simple-is-better.org/rpc/  
 
 **Method**  
 open  
