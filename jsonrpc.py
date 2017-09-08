@@ -471,7 +471,7 @@ class JsonRpc20:
         self.dumps = dumps
         self.loads = loads
 
-    def dumps_request( self, method, params=(), id=0 ):
+    def dumps_request( self, method, params=(), isReq=True, id=0 ):
         """serialize JSON-RPC-Request
 
         :Parameters:
@@ -489,12 +489,20 @@ class JsonRpc20:
         if not isinstance(params, (tuple, list, dict)):
             raise TypeError("params must be a tuple/list/dict or None.")
 
-        if params:
-            return '{"jsonrpc": "2.0", "method": %s, "params": %s, "id": %s}' % \
-                    (self.dumps(method), self.dumps(params), self.dumps(id))
+        if isReq:
+            if params:
+                return '{"jsonrpc": "2.0", "method": %s, "params": %s, "id": %s}' % \
+                        (self.dumps(method), self.dumps(params), self.dumps(id))
+            else:
+                return '{"jsonrpc": "2.0", "method": %s, "id": %s}' % \
+                        (self.dumps(method), self.dumps(id))
         else:
-            return '{"jsonrpc": "2.0", "method": %s, "id": %s}' % \
-                    (self.dumps(method), self.dumps(id))
+            if params:
+                return '{"jsonrpc": "2.0", "method": %s, "params": %s}' % \
+                        (self.dumps(method), self.dumps(params))
+            else:
+                return '{"jsonrpc": "2.0", "method": %s}' % \
+                        (self.dumps(method))
 
     def dumps_notification( self, method, params=() ):
         """serialize a JSON-RPC-Notification
@@ -818,7 +826,7 @@ class TransportSocket(Transport):
                 data = conn.recv(self.limit)
                 self.log( "%s --> %s" % (repr(addr), repr(data)) )
                 result = handler(data)
-                if data is not None:
+                if data is not None and result is not None:
                     self.log( "%s <-- %s" % (repr(addr), repr(result)) )
                     conn.send( result )
                 self.log( "%s close" % repr(addr) )
@@ -898,16 +906,30 @@ class ServerProxy:
         if len(args) > 0 and len(kwargs) > 0:
             raise ValueError("Only positional or named parameters are allowed!")
         if len(kwargs) == 0:
-            req_str  = self.__data_serializer.dumps_request( methodname, args, id )
+            if(len(args) >= 2 and args[-2] == True):
+                argsMod = []
+
+                for i in args:
+                    argsMod.append(i)
+
+                argsMod.pop()
+                argsMod.pop()
+
+                req_str  = self.__data_serializer.dumps_request( methodname, argsMod, args[-2], args[-1])
+            else:
+                req_str  = self.__data_serializer.dumps_request( methodname, args, False, id )
         else:
-            req_str  = self.__data_serializer.dumps_request( methodname, kwargs, id )
+            req_str  = self.__data_serializer.dumps_request( methodname, kwargs, False, id )
 
         try:
             resp_str = self.__transport.sendrecv( req_str )
         except Exception,err:
             raise RPCTransportError(err)
-        resp = self.__data_serializer.loads_response( resp_str )
-        return resp[0]
+
+        # send response only if actually supposed to
+        if len(args) >= 2 and args[-2] == True:
+            resp = self.__data_serializer.loads_response( resp_str )
+            return resp[0]
 
     def __getattr__(self, name):
         # magic method dispatcher
@@ -928,6 +950,7 @@ class _method:
             raise AttributeError("invalid attribute '%s'" % name)
         self.__req  = req
         self.__name = name
+
     def __getattr__(self, name):
         if name[0] == "_":  #prevent rpc-calls for proxy._*-functions
             raise AttributeError("invalid attribute '%s'" % name)

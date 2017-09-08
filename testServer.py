@@ -33,7 +33,7 @@ def idInUse(sid):
     return False
 
 # define some example-procedures and register them (so they can be called via RPC)
-def echo(s):
+def echo(s, isReq=False, id=0):
     return s
 
 # Open a new session. Return the session ID.

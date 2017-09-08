@@ -5,8 +5,10 @@ import jsonrpc
 server = jsonrpc.ServerProxy(jsonrpc.JsonRpc20(), jsonrpc.TransportTcpIp(addr=("127.0.0.1", 31415)))
 
 # call a remote-procedure (with positional parameters)
-result = server.echo("hello world")
+result = server.echo("hello world", True, 42)
 
-id = server.open()
+result2 = server.echo("hi")
+
+#id = server.open()
 
 print id
