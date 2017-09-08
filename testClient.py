@@ -6,3 +6,7 @@ server = jsonrpc.ServerProxy(jsonrpc.JsonRpc20(), jsonrpc.TransportTcpIp(addr=("
 
 # call a remote-procedure (with positional parameters)
 result = server.echo("hello world")
+
+id = server.open()
+
+print id

@@ -18,7 +18,8 @@ Open a new session. Return the session ID.
 **Method**  
 push  
 **Parameter**  
-session_id (integer)   
+session_id (integer)
+number (integer)  
 **Result**  
 stack array  
 **Method Description**  
