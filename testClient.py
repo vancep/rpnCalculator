@@ -9,6 +9,19 @@ result = server.echo("hello world", True, 42)
 
 result2 = server.echo("hi")
 
-#id = server.open()
+id = server.open(True, 43)
 
+server.push(id, 5, True, 44)
+
+server.push(id, 6, False)
+
+server.push(id, 2)
+
+server.add(id, True, 45)
+
+server.push(id, 2, True, 46)
+
+server.subtract(id, True, 47)
+
+server.close(id)
 print id

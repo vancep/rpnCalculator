@@ -524,7 +524,7 @@ class JsonRpc20:
             return '{"jsonrpc": "2.0", "method": %s}' % \
                     (self.dumps(method))
 
-    def dumps_response( self, result, id=None ):
+    def dumps_response( self, result, strRep, id=None ):
         """serialize a JSON-RPC-Response (without error)
 
         :Returns:   | {"jsonrpc": "2.0", "result": ..., "id": ...}
@@ -906,14 +906,14 @@ class ServerProxy:
         if len(args) > 0 and len(kwargs) > 0:
             raise ValueError("Only positional or named parameters are allowed!")
         if len(kwargs) == 0:
-            if(len(args) >= 2 and args[-2] == True):
+            if(len(args) >= 2 and args[-2] is True):
                 argsMod = []
 
                 for i in args:
                     argsMod.append(i)
 
-                argsMod.pop()
-                argsMod.pop()
+                argsMod.pop(-1)
+                argsMod.pop(-1)
 
                 req_str  = self.__data_serializer.dumps_request( methodname, argsMod, args[-2], args[-1])
             else:
@@ -974,6 +974,8 @@ class Server:
         - mixed JSON-RPC 1.0/2.0 server?
         - logging/loglevels?
     """
+    rtrnStrs = {}
+
     def __init__( self, data_serializer, transport, logfile=None ):
         """
         :Parameters:
@@ -1023,7 +1025,7 @@ class Server:
                     self.register_function( getattr(myinst, e) )
                 else:
                     self.register_function( getattr(myinst, e), name="%s.%s" % (name, e) )
-    def register_function(self, function, name=None):
+    def register_function(self, function, rtrnStr=None, name=None):
         """Add a function to the RPC-services.
 
         :Parameters:
@@ -1033,8 +1035,10 @@ class Server:
         """
         if name is None:
             self.funcs[function.__name__] = function
+            self.rtrnStrs[function.__name__] = rtrnStr
         else:
             self.funcs[name] = function
+            self.rtrnStrs[name] = rtrnStr
 
     def handle(self, rpcstr):
         """Handle a RPC-Request.
@@ -1082,7 +1086,7 @@ class Server:
         if notification:
             return None
         try:
-            return self.__data_serializer.dumps_response( result, id )
+            return self.__data_serializer.dumps_response( result, self.rtrnStrs[method], id )
         except Exception, err:
             self.log( "%d (%s): %s" % (INTERNAL_ERROR, ERROR_MESSAGE[INTERNAL_ERROR], str(err)) )
             return self.__data_serializer.dumps_error( RPCFault(INTERNAL_ERROR, ERROR_MESSAGE[INTERNAL_ERROR]), id )
