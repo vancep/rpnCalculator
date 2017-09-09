@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python testServer.py
+python testServer.py &
