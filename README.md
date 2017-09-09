@@ -1,10 +1,13 @@
 # rpnCalculator
 A JSON RPC back-end for a multi-session RPN calculator  
 
-# Instructions
+## Instructions
 To run, execute the StartServer script.  
 To stop, execute the StopServer script.  
 Running StartClient script runs testClient.py.  
+
+## Requirements
+Requires Python 2.7 & python-simplejson  
 
 ## Unfinished
 Pop doesn't print the current values in stack, need to format it correctly.  
