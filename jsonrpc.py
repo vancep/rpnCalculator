@@ -531,8 +531,8 @@ class JsonRpc20:
                     | "jsonrpc", "result", and "id" are always in this order.
         :Raises:    TypeError if not JSON-serializable
         """
-        return '{"jsonrpc": "2.0", "result": %s, "id": %s}' % \
-                (self.dumps(result), self.dumps(id))
+        return '{"jsonrpc": "2.0", "result": {"%s": %s}, "id": %s}' % \
+                (strRep, self.dumps(result), self.dumps(id))
 
     def dumps_error( self, error, id=None ):
         """serialize a JSON-RPC-Response-error

@@ -1,6 +1,12 @@
 # rpnCalculator
 A JSON RPC back-end for a multi-session RPN calculator  
 
+## Unfinished
+Pop doesn't print the current values in stack, need to format it correctly.  
+Need to test custom errors.  
+Need to test invalid inputs.  
+
+
 ## Some resources
 http://www.jsonrpc.org/  
 http://www.jsonrpc.org/specification  

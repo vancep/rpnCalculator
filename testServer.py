@@ -68,9 +68,9 @@ def push(sid, value, isReq=False, id=0):
 # Pop a number from the stack in the specified session
 def pop(sid, isReq=False, id=0):
     if(idInUse(sid)):
-        if(sessions[sid] > 0):
+        if(len(sessions[sid]) > 0):
             value = sessions[sid].pop()
-            return [value, sessions[sid]]
+            return value
         else:
             raise InsufficientNumStackItemsError("Insufficient number of stack items.")
     else:
@@ -90,7 +90,7 @@ def clear(sid, isReq=False, id=0):
 # Pop two numbers from the stack, add them, and put the result back onto the stack.
 def add(sid, isReq=False, id=0):
     if(idInUse(sid)):
-        if(sessions[sid] > 1):
+        if(len(sessions[sid]) > 1):
             op1 = sessions[sid].pop()
             op2 = sessions[sid].pop()
 
@@ -107,7 +107,7 @@ def add(sid, isReq=False, id=0):
 # Pop two numbers from the stack, subtract them, and put the result back onto the stack.
 def subtract(sid, isReq=False, id=0):
     if(idInUse(sid)):
-        if(sessions[sid] > 1):
+        if(len(sessions[sid]) > 1):
             op1 = sessions[sid].pop()
             op2 = sessions[sid].pop()
 
@@ -116,6 +116,14 @@ def subtract(sid, isReq=False, id=0):
             return sessions[sid]
         else:
             raise InsufficientNumStackItemsError("Insufficient number of stack items.")
+    else:
+        raise InvalidSessionIdError(str(sid) + " is not a valid session ID.")
+
+    sys.exit(1) # is only reached if not able to sucessfully perform operation
+
+def getStack(sid, isReq=False, id=0):
+    if(idInUse(sid)):
+        return sessions[sid]
     else:
         raise InvalidSessionIdError(str(sid) + " is not a valid session ID.")
 
@@ -133,10 +141,11 @@ def close(sid, isReq=False, id=0):
 server.register_function( echo, "null" )
 server.register_function( open, "session_id" )
 server.register_function( push, "stack" )
-server.register_function( pop, "stack" )
+server.register_function( pop, "number" )
 server.register_function( clear, "null")
 server.register_function( add, "stack" )
 server.register_function( subtract, "stack" )
+server.register_function( getStack, "stack" )
 server.register_function( close, "null" )
 
 # start server
